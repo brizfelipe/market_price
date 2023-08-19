@@ -55,9 +55,17 @@ def api(request,cep):
             aisles = driver.find_elements('xpath','//*[@id="app-container"]/main/div/div/div')
             for aisle in range(len(aisles)):
                 aisle_name = driver.find_element('xpath',f'//*[@id="app-container"]/main/div/div/div[{aisle+1}]').text.split('\n')[0]
-                if aisle_name == 'Em destaque':
+                if aisle_name == 'Em destaque' or aisle_name == 'Top Products':
                     continue
-                pass
+                # Entrar no aisle 
+                if not selenium.try_click(
+                    driver=driver,
+                    xpath_click=f'//*[@id="app-container"]/main/div/div/div[{aisle+1}]/div[1]/button',
+                    xpath_to_wait_for=f'//*[@id="app-container"]/main/div/div/div/div[2]'
+                ):
+                    return False
+                
+                driver.find_element('xpath',f'//*[@id="app-container"]/main/div/div/div[{aisle+1}]/div[1]/button').click()
 
             
     pass

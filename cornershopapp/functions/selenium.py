@@ -1,15 +1,58 @@
 import time
+from datetime import datetime
 
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-import pandas as pd
-from datetime import datetime
-import time
-from ..models import Store
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 from ..functions import database
+from ..models import Store
+
+def get_produc(driver):
+    product = True
+    last_product = 0
+    caught_products = []
+    while product:
+        try:
+            product_list = driver.find_elements("xpath",'//div[@class="product"]')
+            for number_product in range(product_list):
+                product_detail = {}
+                if not try_click(
+                    driver=driver,
+                    xpath_click=f'//*[@id="app-container"]/main/div/div/div/div[2]/div[{number_product+1}]',
+                    xpath_to_wait_for=f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div'
+                ):
+                    continue
+                else:
+                    product_detail["name"] = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div/section[1]/h2').text
+                    product_detail["price"] = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div/section[3]/table/tbody/tr[1]/td/span/span').text
+                    product_detail['emb'] = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div/section[3]/table/tbody/tr[2]/td').text
 
 
-def try_click(driver,xpath,attempt):
+
+                product_element = driver.find_element("xpath",f'//*[@id="app-container"]/main/div/div/div/div[2]/div[{number_product+1}]')
+
+        except Exception as e:
+            pass
+    
+
+
+def try_click(driver,xpath_click,xpath_to_wait_for):
+    try:
+        element_to_click = driver.find_element(By.XPATH, xpath_click)
+        element_to_click.click()
+        
+        wait = WebDriverWait(driver, 10)
+        wait.until(EC.visibility_of_element_located((By.XPATH, xpath_to_wait_for)))
+        return True
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+    
+
     x = 0
     while x < attempt:
         try:
