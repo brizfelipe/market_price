@@ -1,6 +1,6 @@
 import time
 from datetime import datetime
-
+from selenium.webdriver.common.keys import Keys
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -27,13 +27,27 @@ def get_produc(driver):
                 ):
                     continue
                 else:
+                    url = driver.current_url
+                    # img do departamento
+                    
+                    product_img = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/figure/div/img') 
+                    product_detail["img_link"] = product_img.get_attribute('src')
+
                     product_detail["name"] = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div/section[1]/h2').text
                     product_detail["price"] = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div/section[3]/table/tbody/tr[1]/td/span/span').text
                     product_detail['emb'] = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div/section[3]/table/tbody/tr[2]/td').text
-
-
-
-                product_element = driver.find_element("xpath",f'//*[@id="app-container"]/main/div/div/div/div[2]/div[{number_product+1}]')
+                    product_detail['aisle_id'] = url.split("/")[9]
+                    product_detail['product_id'] = url.split("/")[11]
+                    product_detail["datetime"] = datetime.now()
+                    caught_products.append(product_detail)
+                    # voltar
+                    driver.find_element("xpath",'//*[@id="modal-container"]/div[2]/div/div/div[1]/div/div[3]/button').click()
+            for _ in range(7):
+                driver.find_element("xpath",'//body').send_keys(Keys.ARROW_DOWN)
+            new_product_list = driver.find_elements("xpath",'//div[@class="product"]')
+            if not len(new_product_list) > len(product_list):
+                product = False
+                
 
         except Exception as e:
             pass
