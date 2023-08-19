@@ -27,7 +27,6 @@ def get_produc(driver):
                 ):
                     continue
                 else:
-                    
                     product_detail["name"] = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div/section[1]/h2').text
                     product_detail["price"] = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div/section[3]/table/tbody/tr[1]/td/span/span').text
                     product_detail['emb'] = driver.find_element("xpath",f'//*[@id="modal-container"]/div[2]/div/div/div[2]/div/div/div[1]/div/div/div/section[3]/table/tbody/tr[2]/td').text
